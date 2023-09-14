@@ -1,0 +1,46 @@
+clear, clc, format compact
+
+w12 = 1.e3;		% rad/s
+w3 = 1.e4;		% rad/s
+f12 = w12/2/pi		% Hz
+f3 = w3/2/pi		% Hz
+T12 = 1/f12		% s
+T3 =  1/f3		% s
+t = 0:T12/100:3*T12;
+
+V1m = 5;		% V
+phase_deg_1 =  45; phase_rad_1 = phase_deg_1 / 180 * pi;
+V2m = 7;		% V
+phase_deg_2 = -30; phase_rad_2 = phase_deg_2 / 180 * pi; 
+V3m = 3;		% V
+phase_deg_3 = -90; phase_rad_3 = phase_deg_3 / 180 * pi;
+
+v1 = V1m * cos(w12 * t + phase_rad_1);
+v2 = V2m * sin(w12 * t + phase_rad_2);
+v2_trough_cosine = V2m * cos(w12 * t + (phase_rad_2 - pi/2));
+v3 = V3m * cos(w3  * t + phase_rad_3);
+
+v4 = v1 + v2;
+max(v4)
+
+V4m_from_cosine_theorem = sqrt(V1m^2 + V2m^2 + 2*V1m*V2m*cos(phase_rad_1 - (phase_rad_2 - pi/2)))
+tan_of_phase_rad_4_from_cosine_theorem = (V1m*sin(phase_rad_1) + V2m*sin(phase_rad_2-pi/2)) / (V1m*cos(phase_rad_1) + V2m*cos(phase_rad_2-pi/2));
+phase_rad_4_from_cosine_theorem = atan(tan_of_phase_rad_4_from_cosine_theorem)
+v4_from_cosine_theorem = V4m_from_cosine_theorem * cos(w12*t + phase_rad_4_from_cosine_theorem);
+
+V1_cpx = V1m * exp(j*phase_rad_1)
+V2_cpx = V2m * exp(j*(phase_rad_2-pi/2))
+V4_cpx = V1_cpx + V2_cpx
+V4m_from_cpx = abs(V4_cpx)
+phase_rad_4_from_cpx = angle(V4_cpx)
+v4_from_cpx = V4m_from_cpx * cos(w12*t + phase_rad_4_from_cpx);
+
+v5 = v1 + v3;
+
+plot(t,v1,t,v2,t,v2_trough_cosine,t,v3,t,v4,t,v5,t,v4_from_cosine_theorem,t,v4_from_cpx)
+grid
+legend('v1(t)','v2(t)','v2(t) - sine -> cosine','v3(t)','v1(t)+v2(t)','v1(t)+v3(t)','v1(t)+v1(t) from cosine theorem','v1(t)+v2(t) from cpx')
+xlabel('t, s')
+ylabel('v(t), V')
+title('Harmonic time functions and sum of them')
+
