@@ -67,3 +67,20 @@ V2m_cpx = Vnodesm_cpx(2);
 
 IRloadm_cpx = (V2m_cpx - V3m_cpx) / (ZL3_cpx + ZRload_cpx)
 VRloadm_cpx = ZRload_cpx * IRloadm_cpx
+
+% Thevenin's and Norton's theorems
+% Thevenin's
+V3m_cpx = 0;
+
+
+YL1R1_cpx = 1 / (ZR1_cpx + ZL1_cpx)
+YC1_cpx = 1 / ZC1_cpx
+YC2_cpx = 1 / ZC2_cpx
+YL3Rload_cpx = 1 / (ZL3_cpx + ZRload_cpx)
+
+Y_cpx = [(YL1R1_cpx + YC1_cpx + YC2_cpx) -(YC2_cpx)
+                              -(YC2_cpx)  (YC2_cpx + YL3Rload_cpx)]
+
+Im_cpx = [ Vs1m_cpx * YL1R1_cpx  ;  Is2m_cpx ]
+
+Vnodesm_cpx = Y_cpx \ Im_cpx
